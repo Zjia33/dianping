@@ -1,14 +1,17 @@
 package org.javaup.config;
 
+import org.javaup.execute.RateLimitHandler;
 import org.javaup.execute.RedisRateLimitHandler;
 import org.javaup.lua.SlidingRateLimitOperate;
 import org.javaup.lua.TokenBucketRateLimitOperate;
+import org.javaup.ratelimit.aspect.RateLimitAspect;
 import org.javaup.ratelimit.extension.NoOpRateLimitEventListener;
 import org.javaup.ratelimit.extension.NoOpRateLimitPenaltyPolicy;
 import org.javaup.ratelimit.extension.RateLimitEventListener;
 import org.javaup.ratelimit.extension.RateLimitPenaltyPolicy;
 import org.javaup.ratelimit.extension.ThresholdPenaltyPolicy;
 import org.javaup.redis.RedisCache;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -52,12 +55,18 @@ public class RateLimitAutoConfiguration {
                                                        RateLimitEventListener rateLimitEventListener,
                                                        RateLimitPenaltyPolicy rateLimitPenaltyPolicy) {
         return new RedisRateLimitHandler(
-                seckillRateLimitConfigProperties, 
+                seckillRateLimitConfigProperties,
                 redisCache,
                 slidingRateLimitOperate,
                 tokenBucketRateLimitOperate,
                 rateLimitEventListener,
                 rateLimitPenaltyPolicy
         );
+    }
+
+    @Bean
+    @ConditionalOnBean(RateLimitHandler.class)
+    public RateLimitAspect rateLimitAspect(RateLimitHandler rateLimitHandler) {
+        return new RateLimitAspect(rateLimitHandler);
     }
 }

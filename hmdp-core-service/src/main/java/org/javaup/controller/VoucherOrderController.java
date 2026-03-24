@@ -7,7 +7,7 @@ import org.javaup.dto.CancelVoucherOrderDto;
 import org.javaup.dto.GetVoucherOrderByVoucherIdDto;
 import org.javaup.dto.GetVoucherOrderDto;
 import org.javaup.dto.Result;
-import org.javaup.execute.RateLimitHandler;
+import org.javaup.ratelimit.annotation.RateLimit;
 import org.javaup.ratelimit.extension.RateLimitScene;
 import org.javaup.service.IReconciliationTaskService;
 import org.javaup.service.ISeckillAccessTokenService;
@@ -36,24 +36,21 @@ public class VoucherOrderController {
     private ISeckillAccessTokenService accessTokenService;
 
     @Resource
-    private RateLimitHandler rateLimitHandler;
-    
-    @Resource
     private IReconciliationTaskService reconciliationTaskService;
 
     @GetMapping("/seckill/token/{id}")
+    @RateLimit(scene = RateLimitScene.ISSUE_TOKEN, voucherIdParam = "#id")
     public Result<String> issueSeckillAccessToken(@PathVariable("id") Long voucherId) {
         Long userId = UserHolder.getUser().getId();
-        rateLimitHandler.execute(voucherId, userId, RateLimitScene.ISSUE_TOKEN);
         String token = accessTokenService.issueAccessToken(voucherId, userId);
         return Result.ok(token);
     }
 
     @PostMapping("/seckill/{id}")
+    @RateLimit(scene = RateLimitScene.SECKILL_ORDER, voucherIdParam = "#id")
     public Result<Long> seckillVoucher(@PathVariable("id") Long voucherId,
                                        @RequestParam(name = "accessToken", required = false) String accessToken) {
         Long userId = UserHolder.getUser().getId();
-        rateLimitHandler.execute(voucherId, userId, RateLimitScene.SECKILL_ORDER);
         if (accessTokenService.isEnabled()) {
             if (accessToken == null || !accessTokenService.validateAndConsume(voucherId, userId, accessToken)) {
                 return Result.fail("令牌校验失败或令牌已失效");
