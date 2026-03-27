@@ -18,6 +18,8 @@
         <module>hmdp-mq-common-framework</module>
         <module>hmdp-mq-producer-framework</module>
         <module>hmdp-mq-consumer-framework</module>
+        <module>hmdp-rabbitmq-producer-framework</module>
+        <module>hmdp-rabbitmq-consumer-framework</module>
     </modules>
 
 </project>

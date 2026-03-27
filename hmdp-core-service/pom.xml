@@ -110,6 +110,16 @@
         </dependency>
         <dependency>
             <groupId>org.javaup</groupId>
+            <artifactId>hmdp-rabbitmq-producer-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javaup</groupId>
+            <artifactId>hmdp-rabbitmq-consumer-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javaup</groupId>
             <artifactId>hmdp-service-delay-queue-framework</artifactId>
             <version>${revision}</version>
         </dependency>
